@@ -1,0 +1,79 @@
+name: Label released issues
+
+# When a stable release is published, marks every issue closed as completed
+# since the previous stable release with `implemented`, so "fixed in main" and
+# "installable now" are told apart. Issues close when the PR that fixes them
+# merges to main, so anything closed between the two releases shipped in this
+# one. Issues closed as not planned, and ones labelled as not needing work,
+# are skipped.
+
+# Runs when a release is published by a person, and is called by release.yml
+# right after it publishes one: a release published by GITHUB_TOKEN doesn't
+# trigger other workflows. Can also be run by hand for a given tag.
+on:
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      tag:
+        description: "Release tag"
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, e.g. v1.2.0"
+        type: string
+        required: true
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const { data: current } = await github.rest.repos.getReleaseByTag({
+              owner, repo, tag: process.env.TAG,
+            });
+            if (current.prerelease || current.draft) {
+              console.log(`${current.tag_name} is a pre-release or draft: nothing to label.`);
+              return;
+            }
+
+            const releases = await github.paginate(github.rest.repos.listReleases, {
+              owner, repo, per_page: 100,
+            });
+            const previous = releases
+              .filter(r => !r.draft && !r.prerelease && r.id !== current.id && r.published_at)
+              .filter(r => new Date(r.published_at) < new Date(current.published_at))
+              .sort((a, b) => new Date(b.published_at) - new Date(a.published_at))[0];
+            const since = previous ? new Date(previous.published_at) : new Date(0);
+            const until = new Date(current.published_at);
+            console.log(`Issues closed after ${previous ? previous.tag_name : 'the beginning'} and before ${current.tag_name}`);
+
+            const skip = ['question', 'duplicate', 'invalid', 'wontfix', 'implemented'];
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'closed', since: since.toISOString(), per_page: 100,
+            });
+
+            let count = 0;
+            for (const issue of issues) {
+              if (issue.pull_request || issue.state_reason !== 'completed') continue;
+              const closed = new Date(issue.closed_at);
+              if (closed <= since || closed > until) continue;
+              if (issue.labels.some(l => skip.includes(l.name))) continue;
+              await github.rest.issues.addLabels({
+                owner, repo, issue_number: issue.number, labels: ['implemented'],
+              });
+              console.log(`#${issue.number} ${issue.title}`);
+              count++;
+            }
+            console.log(`Labelled ${count} issue(s) as implemented in ${current.tag_name}`);

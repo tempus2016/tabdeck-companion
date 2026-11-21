@@ -185,7 +185,7 @@ class Decks:
         return [d.as_dict() for d in self._decks.values()]
 
     @classmethod
-    def from_list(cls, data: Any, limit: int = MAX_DECKS) -> "Decks":
+    def from_list(cls, data: Any, limit: int = MAX_DECKS) -> Decks:
         """Rebuild from stored data, skipping anything malformed."""
         decks = cls(limit)
         for item in data if isinstance(data, list) else []:

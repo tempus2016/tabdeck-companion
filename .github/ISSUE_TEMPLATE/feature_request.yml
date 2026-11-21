@@ -1,0 +1,65 @@
+name: Feature Request
+description: Suggest an idea for Tabdeck Companion
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees:
+  - tempus2016
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! Ideas for the card itself belong in [tabdeck-card](https://github.com/tempus2016/tabdeck-card/issues).
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One line describing the feature.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      description: What can't you do today, or what's awkward?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like it to work? An example automation helps.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area does this relate to?
+      multiple: true
+      options:
+        - The select entity
+        - Usage stats / sensor
+        - New entity or service
+        - Devices / naming
+        - Setup / options
+        - Other / not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any workarounds you've tried?
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before Submitting
+      options:
+        - label: I have searched [existing issues](https://github.com/tempus2016/tabdeck-companion/issues) and this has not already been requested
+          required: true

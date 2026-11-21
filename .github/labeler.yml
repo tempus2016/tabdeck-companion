@@ -1,0 +1,48 @@
+# Path-based pull request labels, applied by .github/workflows/labeler.yml.
+# Every label named here must exist — they are defined in .github/labels.yml.
+
+select entity:
+  - changed-files:
+      - any-glob-to-any-file:
+          - custom_components/tabdeck/select.py
+
+usage sensor:
+  - changed-files:
+      - any-glob-to-any-file:
+          - custom_components/tabdeck/sensor.py
+
+websocket api:
+  - changed-files:
+      - any-glob-to-any-file:
+          - custom_components/tabdeck/__init__.py
+          - custom_components/tabdeck/logic.py
+
+setup:
+  - changed-files:
+      - any-glob-to-any-file:
+          - custom_components/tabdeck/config_flow.py
+          - custom_components/tabdeck/manifest.json
+          - custom_components/tabdeck/strings.json
+          - custom_components/tabdeck/translations/**
+          - custom_components/tabdeck/brand/**
+          - hacs.json
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - tests/**
+          - pyproject.toml
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - README.md
+          - CHANGELOG.md
+          - wiki/**
+          - images/**
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
+          - scripts/**
