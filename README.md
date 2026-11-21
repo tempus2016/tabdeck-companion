@@ -13,7 +13,9 @@ actions:
 
 ## Install
 
-1. Copy `custom_components/tabdeck` into your Home Assistant `config/custom_components/` folder (or add this repository to HACS as a custom integration repository).
+Needs Home Assistant 2025.1 or later and the Tabdeck card 1.6.0 or later.
+
+1. In the Home Assistant Marketplace (HACS), add `https://github.com/tempus2016/tabdeck-companion` as a custom repository of type **Integration** and download **Tabdeck Companion**. Or copy `custom_components/tabdeck` into your Home Assistant `config/custom_components/` folder by hand.
 2. Restart Home Assistant.
 3. **Settings → Devices & services → Add integration → Tabdeck Companion**. There is nothing to fill in.
 
