@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Tabdeck Companion",
+        "description": "Gives each browser's Tabdeck deck a select entity, so automations can read and change the open tab. Turn it on per deck with `companion: true` in the card."
+      }
+    },
+    "abort": {
+      "already_configured": "Tabdeck Companion is already set up.",
+      "single_instance_allowed": "Tabdeck Companion is already set up."
+    }
+  },
+  "exceptions": {
+    "not_connected": {
+      "message": "The browser showing this deck isn't connected."
+    },
+    "unknown_tab": {
+      "message": "This deck has no tab called {tab}."
+    }
+  }
+}
