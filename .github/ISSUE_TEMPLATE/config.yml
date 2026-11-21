@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/tempus2016/tabdeck-companion/discussions
+    about: Questions, ideas, and general chat about Tabdeck Companion
+  - name: 🃏 Problem with the card itself?
+    url: https://github.com/tempus2016/tabdeck-card/issues/new/choose
+    about: How tabs look or switch on screen belongs in the tabdeck-card repository
+  - name: 🙌 Share an automation
+    url: https://github.com/tempus2016/tabdeck-companion/discussions/new?category=show-and-tell
+    about: Show off an automation that uses the Tabdeck select entity or usage sensor

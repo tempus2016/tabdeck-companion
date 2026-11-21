@@ -1,0 +1,131 @@
+name: Bug Report
+description: Report a bug or unexpected behaviour in Tabdeck Companion
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees:
+  - tempus2016
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as possible — it helps fix issues faster.
+
+        Before submitting, please check the [README](https://github.com/tempus2016/tabdeck-companion#readme), the [wiki](https://github.com/tempus2016/tabdeck-companion/wiki) and [existing issues](https://github.com/tempus2016/tabdeck-companion/issues). A problem with the card itself (how tabs look or switch on screen) belongs in [tabdeck-card](https://github.com/tempus2016/tabdeck-card/issues).
+
+  - type: input
+    id: companion_version
+    attributes:
+      label: Tabdeck Companion Version
+      description: Settings → Devices & services → Tabdeck Companion, or the Marketplace entry.
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: card_version
+    attributes:
+      label: Tabdeck Card Version
+      description: The companion needs the card 1.6.0 or later.
+      placeholder: e.g. 1.6.0
+    validations:
+      required: true
+
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant Version
+      description: Found in Settings → System → About
+      placeholder: e.g. 2026.11.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installation Method
+      options:
+        - Marketplace (HACS) custom repository
+        - Manual (copied custom_components/tabdeck)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug. What did you see?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Open the dashboard on the kitchen tablet
+        2. Call select.select_option with option "Cameras"
+        3. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Affected Area
+      multiple: true
+      options:
+        - The select entity (state or options wrong)
+        - Switching tabs with select.select_option
+        - The usage sensor
+        - Devices / entity names
+        - Setup / config flow
+        - Installation / Marketplace
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Home Assistant Logs
+      description: |
+        Settings → System → Logs, filtered on "tabdeck". For more detail, add `custom_components.tabdeck: debug` under `logger:` and reproduce.
+      render: text
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Deck YAML
+      description: The tabdeck-card config of the deck (you can trim the inner cards and redact names).
+      render: yaml
+      placeholder: |
+        type: custom:tabdeck-card
+        event_id: main
+        companion: true
+        tabs:
+          - name: Home
+            card: { type: markdown, content: hello }
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Anything else relevant: screenshots, how many browsers show the deck, recent changes.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before Submitting
+      options:
+        - label: I have searched [existing issues](https://github.com/tempus2016/tabdeck-companion/issues) and this is not a duplicate
+          required: true
+        - label: I am running the latest version of Tabdeck Companion and the card
+          required: false

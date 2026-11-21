@@ -1,4 +1,23 @@
-# Tabdeck Companion
+<p align="center">
+  <img src="images/icon.png" alt="Tabdeck Companion" width="120" height="120">
+</p>
+
+<h1 align="center">Tabdeck Companion</h1>
+
+<p align="center">
+  <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/v/release/tempus2016/tabdeck-companion" alt="Latest Release"></a>
+  <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/downloads/tempus2016/tabdeck-companion/total" alt="Downloads"></a>
+  <a href="https://hacs.xyz/docs/faq/custom_repositories/"><img src="https://img.shields.io/badge/Marketplace-Custom-41BDF5.svg" alt="Marketplace Custom"></a>
+  <a href="https://github.com/tempus2016/tabdeck-companion/blob/main/LICENSE"><img src="https://img.shields.io/github/license/tempus2016/tabdeck-companion" alt="License"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/tempus2016/tabdeck-companion/actions/workflows/ci.yml"><img src="https://github.com/tempus2016/tabdeck-companion/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/tempus2016/tabdeck-companion/actions/workflows/hassfest.yml"><img src="https://github.com/tempus2016/tabdeck-companion/actions/workflows/hassfest.yml/badge.svg" alt="hassfest"></a>
+  <a href="https://github.com/tempus2016/tabdeck-companion/actions/workflows/hacs.yml"><img src="https://github.com/tempus2016/tabdeck-companion/actions/workflows/hacs.yml/badge.svg" alt="Marketplace Validation"></a>
+  <a href="https://github.com/tempus2016/tabdeck-companion/wiki"><img src="https://img.shields.io/badge/docs-wiki-blue" alt="Wiki"></a>
+  <a href="https://github.com/tempus2016/tabdeck-card"><img src="https://img.shields.io/badge/for-Tabdeck%20Card-03a9f4" alt="For Tabdeck Card"></a>
+</p>
 
 A small Home Assistant integration for the [Tabdeck card](https://github.com/tempus2016/tabdeck-card). Each browser's deck appears as a **select entity**: its options are the deck's tab names and its state is the open tab. Automations can read which tab a wall tablet shows, and change it with `select.select_option`.
 
@@ -59,6 +78,10 @@ Websocket commands (for other front-ends):
 | `tabdeck/register` | `browser_id`, `deck_id`, `browser_name?`, `tabs`, `tab?` | Subscription. Sends `{ "command": "select", "tab": "…" }` events when the entity is set. |
 | `tabdeck/update` | `browser_id`, `deck_id`, `tabs?`, `tab?` | The deck's tab list or open tab changed. |
 | `tabdeck/usage` | `browser_id`, `deck_id`, `minutes` | Minutes per tab since the last report (added to the totals; at most a day per tab per report). |
+
+## Documentation
+
+The [wiki](https://github.com/tempus2016/tabdeck-companion/wiki) covers installation, the select entity, the usage sensor, automation examples and troubleshooting.
 
 ## Development
 

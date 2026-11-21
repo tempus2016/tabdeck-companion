@@ -1,0 +1,126 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  # Packs and checks the integration with a read-only token. The job that can
+  # write to the repository (publish, below) runs no dependency at all.
+  build:
+    name: Build and attest
+    runs-on: ubuntu-latest
+    # id-token and attestations are for the provenance step, which ties the zip
+    # every install downloads to this run and this commit.
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+
+      - name: Tag matches manifest.json version
+        # manifest.json is the only place the version is written down; a release
+        # that disagrees with it leaves the two to drift apart unnoticed.
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(python -c "import json; print(json.load(open('custom_components/tabdeck/manifest.json'))['version'])")
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::Tag $TAG does not match manifest.json version $version. Bump manifest.json and re-tag."
+            exit 1
+          fi
+
+      - run: pip install pytest pytest-asyncio
+      - run: python -m pytest -q
+
+      - name: Extract release notes from CHANGELOG
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          awk -v tag="$TAG" '
+            $0 ~ "^## "tag { flag=1; next }
+            /^## (v[0-9]|Unreleased)/ && flag { exit }
+            flag { print }
+          ' CHANGELOG.md > RELEASE_NOTES.md
+          # Fall back to a CHANGELOG link if the tag has no matching section.
+          if [ ! -s RELEASE_NOTES.md ]; then
+            echo "See the [CHANGELOG](https://github.com/${GITHUB_REPOSITORY}/blob/main/CHANGELOG.md)." > RELEASE_NOTES.md
+          fi
+          echo "----- release notes -----"; cat RELEASE_NOTES.md
+
+      - name: Zip the integration
+        # hacs.json sets zip_release with filename tabdeck.zip: HACS installs
+        # from this zip and counts its downloads. The zip holds the contents of
+        # custom_components/tabdeck at its root.
+        run: |
+          find custom_components/tabdeck -name __pycache__ -prune -exec rm -rf {} +
+          (cd custom_components/tabdeck && zip -r -X ../../tabdeck.zip .)
+          sha256sum tabdeck.zip > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Attest the zip's provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: tabdeck.zip
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: |
+            tabdeck.zip
+            SHA256SUMS
+            RELEASE_NOTES.md
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+
+      # The asset name must stay tabdeck.zip: it is the filename in hacs.json,
+      # and HACS only counts downloads of an asset with that exact name.
+      - uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        with:
+          files: |
+            tabdeck.zip
+            SHA256SUMS
+          body_path: RELEASE_NOTES.md
+
+  # A release published with GITHUB_TOKEN doesn't trigger other workflows, so
+  # the follow-ups are called directly once the release exists.
+  labels:
+    name: Label released issues
+    needs: publish
+    permissions:
+      issues: write
+      contents: read
+    uses: ./.github/workflows/release-labels.yml
+    with:
+      tag: ${{ github.ref_name }}
+
+  announce:
+    name: Announce in Discussions
+    needs: publish
+    permissions:
+      discussions: write
+      contents: read
+    uses: ./.github/workflows/release-announcement.yml
+    with:
+      tag: ${{ github.ref_name }}

@@ -10,7 +10,8 @@ open tab are accepted, stored or exposed, plus minutes per tab when the card's `
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import voluptuous as vol
 from homeassistant.components import websocket_api
