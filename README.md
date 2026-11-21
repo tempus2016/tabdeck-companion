@@ -33,7 +33,7 @@ The next time a browser opens that dashboard, a device **Tabdeck <browser>** app
 ## How it behaves
 
 - **State:** the open tab. Only visible tabs you can open are options (navigation and action tabs aren't).
-- **Selecting an option** switches every open window of that browser showing the deck. It's treated like the card's `remote_entity`: no PIN prompt, not remembered as the person's choice, and ignored during `quiet_hours`.
+- **Selecting an option** switches every open window of that browser showing the deck. It's treated like the card's `remote_entity`: a tab with a PIN isn't opened unless its code was entered in that browser recently (the entity stays on the open tab), not remembered as the person's choice, and ignored during `quiet_hours`.
 - **Unavailable** while no browser window shows the deck. The entity and its last tab list come back after a restart.
 - **Removing a browser:** delete its device on the integration page. It comes back if that browser registers again.
 - **Without the integration** a deck with `companion: true` works as before and sends nothing more.
