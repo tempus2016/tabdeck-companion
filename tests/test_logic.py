@@ -73,3 +73,17 @@ def test_slug_and_label():
     assert logic.slug("***") == "browser"
     assert logic.browser_label("hall-panel", "") == "Hall panel"
     assert logic.browser_label("x", "  Wall   tablet ") == "Wall tablet"
+
+
+def test_usage_adds_up_and_ignores_junk():
+    decks = logic.Decks()
+    decks.register("kitchen", "main", None, ["Home", "Cameras"], "Home")
+    decks.add_usage("kitchen", "main", {"Home": 2.5, "Cameras": "1.25", "Bad": "x", "Neg": -3, "Nan": float("nan"), "": 4})
+    deck = decks.add_usage("kitchen", "main", {"Home": 0.5, "Huge": 10**9})
+    assert deck.usage == {"Home": 3.0, "Cameras": 1.25, "Huge": logic.MAX_MINUTES_PER_REPORT}
+    assert decks.add_usage("kitchen", "main", "junk").usage == deck.usage
+    back = logic.Decks.from_list(decks.as_list())
+    assert back.get("kitchen", "main").usage == deck.usage
+    import pytest as _p
+    with _p.raises(logic.DeckError):
+        decks.add_usage("nobody", "main", {"Home": 1})

@@ -4,7 +4,8 @@ Cards with `companion: true` open a `tabdeck/register` websocket subscription (H
 API only serves authenticated users) and send `tabdeck/update` when the tab list or the open tab
 changes. Selecting an option on the entity sends `{"command": "select", "tab": ...}` down that
 subscription, and the card switches. Only browser/deck ids, a browser label, tab names and the
-open tab are accepted, stored or exposed.
+open tab are accepted, stored or exposed, plus minutes per tab when the card's `usage_stats` is on
+(`tabdeck/usage`, shown by a sensor per deck).
 """
 
 from __future__ import annotations
@@ -20,10 +21,10 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.storage import Store
 
-from .const import DOMAIN, SIGNAL_DECK_UPDATED, SIGNAL_NEW_DECK, STORAGE_KEY, STORAGE_VERSION
+from .const import DOMAIN, SIGNAL_DECK_UPDATED, SIGNAL_NEW_DECK, SIGNAL_NEW_USAGE, STORAGE_KEY, STORAGE_VERSION
 from .logic import MAX_TABS, Deck, DeckError, Decks
 
-PLATFORMS = [Platform.SELECT]
+PLATFORMS = [Platform.SELECT, Platform.SENSOR]
 SUBS_KEY = f"{DOMAIN}_subscriptions"
 WS_KEY = f"{DOMAIN}_ws_registered"
 
@@ -56,7 +57,7 @@ class Companion:
                 subs.discard(entry)
                 if not subs:
                     del self.subs[key]
-            self._notify(key)
+            self.notify(key)
 
         return detach
 
@@ -73,10 +74,10 @@ class Companion:
         if created:
             async_dispatcher_send(self.hass, SIGNAL_NEW_DECK, deck)
         else:
-            self._notify(deck.key)
+            self.notify(deck.key)
 
     @callback
-    def _notify(self, key: tuple[str, str]) -> None:
+    def notify(self, key: tuple[str, str]) -> None:
         deck = self.decks.get(*key)
         if deck is not None:
             async_dispatcher_send(self.hass, SIGNAL_DECK_UPDATED.format(deck.unique_id))
@@ -93,6 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not hass.data.get(WS_KEY):
         websocket_api.async_register_command(hass, ws_register)
         websocket_api.async_register_command(hass, ws_update)
+        websocket_api.async_register_command(hass, ws_usage)
         hass.data[WS_KEY] = True
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
@@ -176,3 +178,32 @@ def ws_update(hass: HomeAssistant, connection: websocket_api.ActiveConnection, m
         return
     connection.send_result(msg["id"])
     companion.changed(deck, False)
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "tabdeck/usage",
+        vol.Required("browser_id"): _TEXT,
+        vol.Required("deck_id"): _TEXT,
+        vol.Required("minutes"): vol.All(dict, vol.Length(max=MAX_TABS * 2)),
+    }
+)
+@callback
+def ws_usage(hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict) -> None:
+    """Minutes spent on each tab since the last report (usage_stats on the card)."""
+    companion = _companion(hass, connection, msg)
+    if companion is None:
+        return
+    try:
+        deck = companion.decks.get(msg["browser_id"], msg["deck_id"])
+        had = bool(deck and deck.usage)
+        deck = companion.decks.add_usage(msg["browser_id"], msg["deck_id"], msg["minutes"])
+    except DeckError as err:
+        connection.send_error(msg["id"], err.code, str(err))
+        return
+    connection.send_result(msg["id"])
+    companion.save()
+    if deck.usage and not had:
+        async_dispatcher_send(hass, SIGNAL_NEW_USAGE, deck)
+    else:
+        companion.notify(deck.key)

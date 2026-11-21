@@ -16,6 +16,8 @@ MAX_DECKS = 200
 MAX_TABS = 100
 MAX_TEXT = 100
 MAX_LABEL = 64
+# Usage minutes in one report are capped at a day per tab.
+MAX_MINUTES_PER_REPORT = 24 * 60
 
 
 class DeckError(ValueError):
@@ -76,6 +78,8 @@ class Deck:
     browser_name: str
     tabs: list[str] = field(default_factory=list)
     tab: str | None = None
+    # Minutes per tab name (usage stats, opt-in on the card).
+    usage: dict[str, float] = field(default_factory=dict)
 
     @property
     def key(self) -> tuple[str, str]:
@@ -97,6 +101,7 @@ class Deck:
             "browser_name": self.browser_name,
             "tabs": list(self.tabs),
             "tab": self.tab,
+            "usage": dict(self.usage),
         }
 
 
@@ -150,6 +155,25 @@ class Decks:
             deck.tab = clean_text(tab) or None
         return deck
 
+    def add_usage(self, browser_id: Any, deck_id: Any, minutes: Any) -> Deck:
+        """Add minutes per tab to a known deck's totals; ignores bad or negative values."""
+        deck = self.update(browser_id, deck_id)
+        if not isinstance(minutes, dict):
+            return deck
+        for name, value in list(minutes.items())[:MAX_TABS]:
+            tab = clean_text(name)
+            try:
+                amount = float(value)
+            except (TypeError, ValueError):
+                continue
+            if not tab or amount != amount or amount <= 0:
+                continue
+            amount = min(amount, MAX_MINUTES_PER_REPORT)
+            if tab not in deck.usage and len(deck.usage) >= MAX_TABS:
+                continue
+            deck.usage[tab] = round(deck.usage.get(tab, 0.0) + amount, 2)
+        return deck
+
     def remove_browser(self, browser_id: str) -> list[Deck]:
         """Forget every deck of one browser (its device was deleted). Returns them."""
         gone = [d for d in self._decks.values() if d.browser_id == browser_id]
@@ -168,9 +192,10 @@ class Decks:
             if not isinstance(item, dict):
                 continue
             try:
-                decks.register(
+                deck, _ = decks.register(
                     item.get("browser_id"), item.get("deck_id"), item.get("browser_name"), item.get("tabs"), item.get("tab")
                 )
             except DeckError:
                 continue
+            decks.add_usage(deck.browser_id, deck.deck_id, item.get("usage"))
         return decks

@@ -38,9 +38,17 @@ The next time a browser opens that dashboard, a device **Tabdeck <browser>** app
 - **Removing a browser:** delete its device on the integration page. It comes back if that browser registers again.
 - **Without the integration** a deck with `companion: true` works as before and sends nothing more.
 
+## Usage stats
+
+With `usage_stats: true` on a companion deck, the card reports how many minutes each tab was on screen (every 10 minutes, or every N with `usage_stats: N`). The deck then gets a sensor such as `sensor.tabdeck_kitchen_tablet_main_usage`: total minutes (`total_increasing`, so long-term statistics and Utility Meter helpers work), with minutes per tab in its `tabs` attribute, busiest first:
+
+```yaml
+{{ state_attr('sensor.tabdeck_kitchen_tablet_main_usage', 'tabs')['Cameras'] }}
+```
+
 ## What it accepts
 
-The card talks to Home Assistant over its normal, logged-in websocket connection, so only signed-in Home Assistant users can register decks. The integration accepts and stores only a browser id, a deck id, a browser label, the tab names and the open tab (ids: 1-64 letters, digits, `_ . -`; at most 100 tabs of 100 characters; at most 200 decks). It reads nothing else from the browser and exposes nothing else.
+The card talks to Home Assistant over its normal, logged-in websocket connection, so only signed-in Home Assistant users can register decks. The integration accepts and stores only a browser id, a deck id, a browser label, the tab names, the open tab and minutes per tab (ids: 1-64 letters, digits, `_ . -`; at most 100 tabs of 100 characters; at most 200 decks). It reads nothing else from the browser and exposes nothing else.
 
 Websocket commands (for other front-ends):
 
@@ -48,6 +56,7 @@ Websocket commands (for other front-ends):
 |---|---|---|
 | `tabdeck/register` | `browser_id`, `deck_id`, `browser_name?`, `tabs`, `tab?` | Subscription. Sends `{ "command": "select", "tab": "…" }` events when the entity is set. |
 | `tabdeck/update` | `browser_id`, `deck_id`, `tabs?`, `tab?` | The deck's tab list or open tab changed. |
+| `tabdeck/usage` | `browser_id`, `deck_id`, `minutes` | Minutes per tab since the last report (added to the totals; at most a day per tab per report). |
 
 ## Development
 
