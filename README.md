@@ -4,6 +4,8 @@
 
 <h1 align="center">Tabdeck Companion</h1>
 
+<!-- ha-marketplace:exclude-start -->
+
 <p align="center">
   <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/v/release/tempus2016/tabdeck-companion" alt="Latest Release"></a>
   <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/downloads/tempus2016/tabdeck-companion/total" alt="Downloads"></a>
@@ -19,6 +21,8 @@
   <a href="https://github.com/tempus2016/tabdeck-card"><img src="https://img.shields.io/badge/for-Tabdeck%20Card-03a9f4" alt="For Tabdeck Card"></a>
 </p>
 
+<!-- ha-marketplace:exclude-end -->
+
 A small Home Assistant integration for the [Tabdeck card](https://github.com/tempus2016/tabdeck-card). Each browser's deck appears as a **select entity**: its options are the deck's tab names and its state is the open tab. Automations can read which tab a wall tablet shows, and change it with `select.select_option`.
 
 ```yaml
@@ -32,9 +36,9 @@ actions:
 
 ## Install
 
-Needs Home Assistant 2025.1 or later and the Tabdeck card 1.6.0 or later.
+Needs Home Assistant 2026.11 or later and the Tabdeck card 1.6.0 or later.
 
-1. Open **Settings → Marketplace** (on Home Assistant before 2026.11, open **HACS**), search for **Tabdeck Companion** and download it. If it doesn't show up, add `https://github.com/tempus2016/tabdeck-companion` as a custom repository of type **Integration** first. Or copy `custom_components/tabdeck` into your Home Assistant `config/custom_components/` folder by hand.
+1. Open **Settings → Marketplace**, search for **Tabdeck Companion** and download it. If it doesn't show up, add `https://github.com/tempus2016/tabdeck-companion` as a custom repository of type **Integration** first. Or copy `custom_components/tabdeck` into your Home Assistant `config/custom_components/` folder by hand.
 2. Restart Home Assistant.
 3. **Settings → Devices & services → Add integration → Tabdeck Companion**. There is nothing to fill in.
 

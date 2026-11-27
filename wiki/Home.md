@@ -16,5 +16,5 @@ A small Home Assistant integration for the [Tabdeck card](https://github.com/tem
 
 ## Requirements
 
-- Home Assistant 2025.1 or later.
+- Home Assistant 2026.11 or later.
 - Tabdeck card 1.6.0 or later.
