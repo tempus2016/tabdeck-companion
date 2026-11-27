@@ -88,7 +88,7 @@ class Companion:
         self.store.async_delay_save(lambda: {"decks": self.decks.as_list()}, 5)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     store: Store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
     data = await store.async_load() or {}
     hass.data[DOMAIN] = Companion(hass, store, Decks.from_list(data.get("decks")))
@@ -98,16 +98,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         websocket_api.async_register_command(hass, ws_usage)
         hass.data[WS_KEY] = True
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if ok:
-        companion: Companion | None = hass.data.pop(DOMAIN, None)
-        if companion is not None:
-            await companion.store.async_save({"decks": companion.decks.as_list()})
-    return ok
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    # Raises ConfigEntryError if a platform fails to unload, so the decks stay loaded.
+    await hass.config_entries.async_unload_platforms_or_raise(entry, PLATFORMS)
+    companion: Companion | None = hass.data.pop(DOMAIN, None)
+    if companion is not None:
+        await companion.store.async_save({"decks": companion.decks.as_list()})
 
 
 async def async_remove_config_entry_device(hass: HomeAssistant, entry: ConfigEntry, device: dr.DeviceEntry) -> bool:

@@ -6,7 +6,7 @@
 
 Tabdeck Companion is in the default Marketplace catalog, so no custom repository is needed.
 
-1. Open **Settings → Marketplace** (on Home Assistant before 2026.11, open **HACS**).
+1. Open **Settings → Marketplace**.
 2. Search for **Tabdeck Companion**, download it, and restart Home Assistant.
 
 If it doesn't show up yet, add it by hand: **⋮ → Custom repositories**, add `https://github.com/tempus2016/tabdeck-companion` with type **Integration**, then download it as above.
