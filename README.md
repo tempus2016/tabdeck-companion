@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/v/release/tempus2016/tabdeck-companion" alt="Latest Release"></a>
   <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/downloads/tempus2016/tabdeck-companion/total" alt="Downloads"></a>
-  <a href="https://hacs.xyz/docs/faq/custom_repositories/"><img src="https://img.shields.io/badge/Marketplace-Custom-41BDF5.svg" alt="Marketplace Custom"></a>
+  <a href="https://github.com/hacs/default"><img src="https://img.shields.io/badge/Marketplace-Default-41BDF5.svg" alt="Marketplace Default"></a>
   <a href="https://github.com/tempus2016/tabdeck-companion/blob/main/LICENSE"><img src="https://img.shields.io/github/license/tempus2016/tabdeck-companion" alt="License"></a>
 </p>
 
@@ -34,7 +34,7 @@ actions:
 
 Needs Home Assistant 2025.1 or later and the Tabdeck card 1.6.0 or later.
 
-1. In the Home Assistant Marketplace (HACS), add `https://github.com/tempus2016/tabdeck-companion` as a custom repository of type **Integration** and download **Tabdeck Companion**. Or copy `custom_components/tabdeck` into your Home Assistant `config/custom_components/` folder by hand.
+1. Open **Settings → Marketplace** (on Home Assistant before 2026.11, open **HACS**), search for **Tabdeck Companion** and download it. If it doesn't show up, add `https://github.com/tempus2016/tabdeck-companion` as a custom repository of type **Integration** first. Or copy `custom_components/tabdeck` into your Home Assistant `config/custom_components/` folder by hand.
 2. Restart Home Assistant.
 3. **Settings → Devices & services → Add integration → Tabdeck Companion**. There is nothing to fill in.
 
