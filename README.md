@@ -4,6 +4,8 @@
 
 <h1 align="center">Tabdeck Companion</h1>
 
+<!-- ha-marketplace:exclude-start -->
+
 <p align="center">
   <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/v/release/tempus2016/tabdeck-companion" alt="Latest Release"></a>
   <a href="https://github.com/tempus2016/tabdeck-companion/releases"><img src="https://img.shields.io/github/downloads/tempus2016/tabdeck-companion/total" alt="Downloads"></a>
@@ -18,6 +20,8 @@
   <a href="https://github.com/tempus2016/tabdeck-companion/wiki"><img src="https://img.shields.io/badge/docs-wiki-blue" alt="Wiki"></a>
   <a href="https://github.com/tempus2016/tabdeck-card"><img src="https://img.shields.io/badge/for-Tabdeck%20Card-03a9f4" alt="For Tabdeck Card"></a>
 </p>
+
+<!-- ha-marketplace:exclude-end -->
 
 A small Home Assistant integration for the [Tabdeck card](https://github.com/tempus2016/tabdeck-card). Each browser's deck appears as a **select entity**: its options are the deck's tab names and its state is the open tab. Automations can read which tab a wall tablet shows, and change it with `select.select_option`.
 
